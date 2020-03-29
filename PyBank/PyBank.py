@@ -1,49 +1,53 @@
 import os
 import csv
+import statistics
 
-budget_data = "budget_data.csv"
+budget_df  = "budget_data.csv"
+budget_df
 
-# with open(budget_data) as csvfile:
-#     csvreader = csv.reader(csvfile, delimiter=",")
+def average (numbers):
+    total = 0.0
+    for number in numbers:
+        total += number
+    find_average = total/len(numbers)
+    return find_average
+        
 
-#     csv_header = next(csvfile)
-#     print(f'Header: {csv_header}')
+months = [] #Total number of months
+total = [] #total value of all the months added together 
+monthly_changes =[] #list of all values for each month
 
-#  Finding Total number of months in the dataset
-
-total = 0 
-
-with open(budget_data) as csvfile:
+with open(budget_df) as csvfile:
     csvreader = csv.reader(csvfile, delimiter=",")
     csv_header = next(csvfile)
-    print(f'Header: {csv_header}')
-
     for row in csvreader:
-        for months in row:
-            total = total + int(months[1])
-            total_lines = sum(1 for line in csvfile)
-            print(f'There are a total of {total_lines} line in this file')
-            print(total)
+        months.append(row[0])
+        total.append(row[1])
+        monthly_changes.append(int(row[1]))
+    amount_months = len(months)
+    print(f'Total Months: {amount_months}')
+    
+    total_value = 0
+    for values in total:
+        total_value += int(values)
+    print(f'Total: ${total_value}')
 
-# ------------------------------------------------------------------------------------
+    net_change = [j-i for i,j in zip(monthly_changes[:-1], monthly_changes[1:])]
+    print(f'Average Change: ${round(average(net_change),2)}')
+    net_change.sort(reverse=True)
+    
+    print(f'The greatest increase in profits: ${net_change[0]}')
+    print(f'The greatest decrease in profits: ${net_change[len(net_change)-1]}')
 
-# def Total_Months(months):
-#     with open(budget_data) as csvfile:
-#         total_lines = sum(1 for line in csvfile)
-#         print(f'There are a total of {total_lines} line in this file')
+output_path = 'Financial Analysis.txt'
 
-
-#  Net total amount of "Profit/Losses" over entire period
-
-#  Average of changes in "Profit/Losses" over entire period
-
-#  Greatest Increase in profits (date & amount) over entire period
-
-#  Greatest decrease in losses (date & amount) over entire period
-
-#  Exporting Textfile
-
-# output_file = os.path.join("PyBank_Analysis_Report.csv")
-# with open(output_file, "w") as datafile: 
-#     writer = csv.writer(datafile)
-#     writer.writerow
+with open(output_path, 'w', newline ='') as csvfile:
+    csvwriter = csv.writer(csvfile, delimiter=',')
+    csvwriter.writerow(['Financial Analysis'])
+    csvwriter.writerow(["------------------------------------------------------"])
+    csvwriter.writerow([f'Total Months: {amount_months}'])
+    csvwriter.writerow([f'Total: ${total_value}'])
+    csvwriter.writerow([f'Average Change: ${round(average(net_change),2)}'])
+    csvwriter.writerow([f'The greatest increase in profits: ${net_change[0]}'])
+    csvwriter.writerow([f'The greatest decrease in profits: ${net_change[len(net_change)-1]}'])
+    
